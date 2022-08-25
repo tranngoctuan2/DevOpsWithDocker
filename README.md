@@ -159,13 +159,100 @@ cat>Dockerfile
      WORKDIR /usr/src/
      COPY . .
      EXPOSE 8080
-     ENV REQUEST_ORIGIN=http://localhost:5000
+     ENV REQUEST_ORIGIN=http://localhost:5000	
      RUN go build
      RUN go test
      CMD ./server
      ^C
      
-docker build . -t example-be
+docker build . -t example-be	
 docker run -p 8080:8080 example-be
+```
+- Exercise 2.1:
+Tạo 1 file docker-compose.yml
+cmd:
+```
+cat > docker-compose.yml
+	version: "3.9"
+	services:
+	 logger:
+	  image: devopsdockeruh/simple-web-service
+	  build: .
+	  volumes: 
+		 - ./log:/usr/src/app/text.log
+	  container_name: logger
+	  ^C
+docker-compose up
+```
+- Exercise 2.2:
+cmd:
+```
+cat > docker-compose.yml
+	version: "3.9"
+	services:
+	 web:
+	  image: devopsdockeruh/simple-web-service
+	  build: .
+	  ports: 
+	       - 8080:8080
+	  command: server
+	  container_name: web
+	  ^C
+docker-compose up
+```
+- Exercise 2.3:
+cmd:
+```
+cat > docker-compose.yml
+	version: "3.9"
+	services:
+	 example-backend:
+	  container_name: containbe
+	  image: example-be
+	  build: .
+	  ports: 
+	   - "8080:8080"
+	 example-frontend:
+	  container_name: containfe
+	  image: example-fe
+	  build: .
+	  ports: 
+	   - "5000:5000"
+	  ^C
+docker-compose up
+```
+- Exercise 2.4:
+cmd:
+```
+cat > docker-compose.yml
+	version: "3.9"
+	services:
+	 redis:
+	  image: redis
+	  restart: unless-stopped
+	 example-backend:
+	  container_name: containbe
+	  image: example-be
+	  environment:
+	   - REDIS_HOST=redis
+	  depends_on:
+	   - redis
+	  ports:
+	   - "8080:8080"
+	 example-frontend:
+	  container_name: containfe
+	  image: example-fe
+	  depends_on:
+	   - example-backend
+	  ports: 
+	   - "5000:5000"
+	  ^C
+docker-compose up
+```
+truy cập vào localhost:5000 click vào button tại 2.4
+- Exercise 2.5:
+cmd:
+```
+docker-compose up -d --scale compute=3
 ```
 	
