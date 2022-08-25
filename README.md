@@ -256,3 +256,4 @@ cmd:
 docker-compose up -d --scale compute=3
 ```
 	
+cmd2
