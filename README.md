@@ -247,6 +247,7 @@ cat > docker-compose.yml
 	  ports: 
 	   - "5000:5000"
 	  ^C
+docker run -d redis
 docker-compose up
 ```
 truy cập vào localhost:5000 click vào button tại 2.4
@@ -255,5 +256,45 @@ cmd:
 ```
 docker-compose up -d --scale compute=3
 ```
-	
-cmd2
+- Exercise 2.6:	
+cmd:
+```
+docker run -d postgres
+cat > docker-compose.yml
+	version: "3.9"
+	services:
+	 redis:
+	  image: redis
+	  restart: unless-stopped
+	 example-backend:
+	  container_name: containbe
+	  image: example-be
+	  environment:
+	   - REDIS_HOST=redis
+	   - POSTGRES_HOST=postgres
+	   - POSTGRES_USER=postgres
+	   - POSTGRES_PASSWORD=postgres
+	   - POSTGRES_DATABASE=postgres
+	  depends_on:
+	   - redis
+	   - postgres
+	  ports:
+	   - "8080:8080"
+	 example-frontend:
+	  container_name: containfe
+	  image: example-fe
+	  depends_on:
+	   - example-backend
+	  ports: 
+	   - "5000:5000"
+	 postgres:
+	  image: postgres
+	  environment:
+	   - POSTGRES_HOST=postgres
+	   - POSTGRES_USER=postgres
+	   - POSTGRES_PASSWORD=postgres
+	   - POSTGRES_DATABASE=postgres
+	   ^C
+docker-compose up
+```
+ 
