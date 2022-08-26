@@ -297,4 +297,72 @@ cat > docker-compose.yml
 	   ^C
 docker-compose up
 ```
+- Exercise 2.8:	
+cmd:
+```
+cat> nginx.conf
+	events { worker_connections 1024; }
+
+	http {
+	  server {
+	    listen 80;
+
+	    location / {
+	      proxy_pass http://frontend:5000/;
+	    }
+
+	    location /api/ {
+	      proxy_pass http://backend:8080/;
+	    }
+	  }
+	}
+	^C
+cat>docker-compose.yml
+	version: "3.9"
+	services:
+	 redis:
+	  image: redis
+	  restart: unless-stopped
+	 backend:
+	  container_name: backend
+	  image: example-be
+	  environment:
+	   - REDIS_HOST=redis
+	   - POSTGRES_HOST=postgres
+	   - POSTGRES_USER=postgres
+	   - POSTGRES_PASSWORD=postgres
+	   - POSTGRES_DATABASE=postgres
+	   - REQUEST_ORIGIN=http://localhost:80
+	  depends_on:
+	   - redis
+	   - postgres
+	  ports:
+	   - "8080:8080"
+	 frontend:
+	  container_name: frontend
+	  image: example-fe
+	  depends_on:
+	   - backend
+	  environment:
+	   - REACT_APP_BACKEND_URL=http://localhost:80
+	  ports: 
+	   - "5000:5000"
+	 postgres:
+	  image: postgres
+	  environment:
+	   - POSTGRES_HOST=postgres
+	   - POSTGRES_USER=postgres
+	   - POSTGRES_PASSWORD=postgres
+	   - POSTGRES_DATABASE=postgres 
+	 nginx:
+	  image: nginx
+	  ports:
+	   - "8081:80"
+	  volumes:
+	   - ./nginx.config:/etc/nginx/nginx.conf
+	 ^C
+docker compose up
+```
+Sau đó truy cập localhost:8081 để test
+
  
